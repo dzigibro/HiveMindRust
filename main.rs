@@ -4,9 +4,15 @@ use rand::Rng;
 use lazy_static::lazy_static;
 mod spawn_journal;
 use regex::Regex;
-use systemd::journal::{Journal, JournalSeek, OpenOptions};
+use systemd::bus::Message;
+use systemd::journal::{JournalRecord, JournalSeek, OpenOptions };
+use std::io::Result as SdResult;
+
+
+
 
 //REGEX setup once a runtime = fast! Nice! Efficent! -----Should add the fucking outside import to handle these in yaml or json instead 
+
 lazy_static::lazy_static! {
     static ref PATTERNS: Vec<Regex> = vec![
         Regex::new(r"failed").unwrap(),
@@ -24,12 +30,11 @@ lazy_static::lazy_static! {
 
 
 
-fn main() {
+fn main() -> SdResult<()> {
 
 
+read_journal_loop()
 
-
-check_line_for_matches(line);
 
 }
 
@@ -40,26 +45,27 @@ check_line_for_matches(line);
 
 
 
-fn read_journal_loop() -> Result<(), systemd::Error> {
-    // Build the reader
+fn read_journal_loop() -> SdResult<()> {
+    // Builder-style open; defaults already grab user + system journals
     let mut journal = OpenOptions::default()
-        .runtime_only(false)   // include persistent boots
-        .local_only(false)     // include remote hosts too
-        .open()?;              // <-- this replaces your mythical `open_with()`
+        .runtime_only(false)   // include old boots
+        .local_only(false)     // include remote hosts
+        .open()?;              // ← this actually exists
 
-    // Start at the end and follow like `journalctl -f`
-    journal.seek(JournalSeek::Tail)?;
-    journal.watch_all_elements()?;   // arm inotify/Fd watch
+    journal.seek(JournalSeek::Tail)?;   // like `journalctl -f`
+
+    // Follow the stream forever
+    journal.watch_all_elements(|rec: JournalRecord| {
+        if let Some(msg) = rec.get("MESSAGE") {
+            check_line_for_matches(msg);
+        }
+        Ok(())                 // closure must yield Result<()>
+    })
+}
 
     // Tail the log forever
-    loop {
-        if let Some(entry) = journal.next_entry()? {
-            if let Some(message) = entry.get("MESSAGE") {
-                check_line_for_matches(message);
-            }
-        }
-    }
-}
+    
+           
 
 
 
