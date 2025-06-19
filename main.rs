@@ -10,7 +10,7 @@ fn main() {
 
 fn check_line_for_matches(line: &str) {
     let patterns = vec![
-        r"failed", r"sudo", r"login", r"cmd\.exe", r"powershell"
+        r"failed", r"sudo", r"login", r"root", r"error"
     ];
 
     for pat in patterns {
