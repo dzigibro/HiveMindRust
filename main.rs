@@ -1,10 +1,6 @@
-use std::io::{BufRead, BufReader, Result};
-use std::process::{Child, Command, Stdio};
-use rand::Rng;
-use lazy_static::lazy_static;
+use std::io::{Result};
 mod spawn_journal;
 use regex::Regex;
-use systemd::bus::Message;
 use systemd::journal::{JournalRecord, JournalSeek, OpenOptions };
 use std::io::Result as SdResult;
 
@@ -25,6 +21,12 @@ lazy_static::lazy_static! {
 
 
 
+fn build_patterns() -> Result<Vec<Regex>, regex::Error> {
+    let raw = [r"failed", r"sudo", r"login", r"root", r"error"];
+    raw.iter()
+        .map(|p| Regex::new(p))
+        .collect::<Result<Vec<_>(), regex::Error>>()  // ← makes the type system happy
+}
 
 
 
