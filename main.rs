@@ -2,7 +2,7 @@ use std::io::{Result};
 mod spawn_journal;
 use regex::Regex;
 use systemd::journal::{JournalRecord, JournalSeek, OpenOptions };
-use std::io::: as SdResult
+use std::io::Result as SdResult;
 
 
 
@@ -17,7 +17,7 @@ use std::io::: as SdResult
         Regex::new(r"error").unwrap(),
     ];
 }
-*/
+
 
 fn build_patterns() -> Result<Vec<Regex>, regex::Error> {
     let raw = [r"failed", r"sudo", r"login", r"root", r"error"];
@@ -27,7 +27,7 @@ fn build_patterns() -> Result<Vec<Regex>, regex::Error> {
 }
 
 
-
+*/
 
 
 fn main() -> SdResult<()> {
