@@ -9,7 +9,7 @@ use std::io::Result as SdResult;
 
 //REGEX setup once a runtime = fast! Nice! Efficent! -----Should add the fucking outside import to handle these in yaml or json instead 
 
-lazy_static::lazy_static! {
+/*lazy_static::lazy_static! {
     static ref PATTERNS: Vec<Regex> = vec![
         Regex::new(r"failed").unwrap(),
         Regex::new(r"sudo").unwrap(),
@@ -18,8 +18,7 @@ lazy_static::lazy_static! {
         Regex::new(r"error").unwrap(),
     ];
 }
-
-
+*/
 
 fn build_patterns() -> Result<Vec<Regex>, regex::Error> {
     let raw = [r"failed", r"sudo", r"login", r"root", r"error"];
