@@ -2,8 +2,7 @@ use std::io::{Result};
 mod spawn_journal;
 use regex::Regex;
 use systemd::journal::{JournalRecord, JournalSeek, OpenOptions };
-use std::io::Result as SdResult;
-
+use std::io::: as SdResult
 
 
 
